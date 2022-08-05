@@ -10,8 +10,9 @@ let seed = [];
 let costs = [];
 let ROWS = 30;
 let COLS = 30;
-let EPOCHS = 400;
-let LEARNING_RATE = 0.0098;
+let layer_data = []
+let EPOCHS = 100;
+let LEARNING_RATE = 0.009;
 
 let op_costs = [];
 let op_layers = [];
@@ -20,26 +21,24 @@ function setup() {
     createCanvas(W, H);
     background(0);
 
-    let layer_data = get_layers(2, 8);
+    layer_data = get_layers(2, 8);
     net = new NeuralNet(layer_data);
     F = new VectorField(COLS, ROWS);
     data = F.data
 
-    console.log(layer_data);
-    console.log("INITIAL COST:", net.get_cost(data));
-    stochastic_grad_desc(LEARNING_RATE);
-    console.log("FINAL COST:", net.get_cost(data));
+    stochastic_grad_desc(LEARNING_RATE, 1);
+    P = new PredField(COLS, ROWS);
 }
 
 function draw() {
     background(0);
+    stochastic_grad_desc(LEARNING_RATE, 1);
+    
     if (field == 0) {
         F.show();
     } else if (field == 1) {
         P.show();
-    } else {
-        show_costs()
-    }
+    } 
 }
 
 function keyPressed() {
@@ -52,12 +51,13 @@ function keyPressed() {
     }
 }
 
-function stochastic_grad_desc(lr) {
-    for (let i = 0; i < EPOCHS; i++) {
+function stochastic_grad_desc(lr, eps) {
+    console.log(net.get_cost(data));
+    for (let i = 0; i < eps; i++) {
         let index_arr = [];
         let mini_batch = [];
         let rand_index = 0;
-        let batch_size = Math.floor(random(data.length/8, data.length/4));
+        let batch_size = Math.floor(random(data.length/8, data.length/2));
 
         costs[i] = net.get_cost(data);
         for (let j = 0; j < batch_size; j++) {
@@ -87,10 +87,10 @@ function show_costs() {
 
 function get_layers(ins, outs) {
     let vals = [ins];
-    let num_hidden_layers = Math.floor(random(2, 20));
+    let num_hidden_layers = 2//Math.floor(random(2, 10));
 
     for (let i = 1; i < num_hidden_layers+1; i++) {
-        vals[i] = Math.floor(random(2, 300));
+        vals[i] = Math.floor(random(6, 100));
     }
     vals.push(outs);
 
@@ -98,7 +98,7 @@ function get_layers(ins, outs) {
 }
 
 function get_dir(arr, p) {
-    let index = (arr.indexOf(max(arr)) - 1)%arr.length;
+    let index = arr.indexOf(max(arr));
     let new_p = [];
 
     switch(index) {
