@@ -18,6 +18,7 @@ class NeuralNet {
     feed_forward(input) {
         if (input.length != this.neurons_per_layer[0]) {
             console.log("INVALID INPUT. CANNOT FEED FORWARD.")
+            console.log(input.length, this.neurons_per_layer[0]);
             return 0;
         }
         

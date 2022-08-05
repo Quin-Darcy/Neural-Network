@@ -1,13 +1,20 @@
 let W = window.innerWidth;
 let H = window.innerHeight;
 
+let F;
+let P;
 let net;
-let costs = [];
-let EPOCHS = 1000;
 let data;
-let seeds = [];
-let NUM_CIRCLES = 10;
-let POINTS_PER_CIRCLE = 500;
+let field = 1;
+let seed = [];
+let costs = [];
+let ROWS = 30;
+let COLS = 30;
+let EPOCHS = 400;
+let LEARNING_RATE = 0.0098;
+
+let op_costs = [];
+let op_layers = [];
 
 function setup() {
     createCanvas(W, H);
@@ -15,47 +22,53 @@ function setup() {
 
     let layer_data = get_layers(2, 8);
     net = new NeuralNet(layer_data);
-    data = new Circles(NUM_CIRCLES, POINTS_PER_CIRCLE).data;
-    console.log(layer_data)
+    F = new VectorField(COLS, ROWS);
+    data = F.data
 
+    console.log(layer_data);
+    console.log("INITIAL COST:", net.get_cost(data));
+    stochastic_grad_desc(LEARNING_RATE);
+    console.log("FINAL COST:", net.get_cost(data));
+}
+
+function draw() {
+    background(0);
+    if (field == 0) {
+        F.show();
+    } else if (field == 1) {
+        P.show();
+    } else {
+        show_costs()
+    }
+}
+
+function keyPressed() {
+    if (keyCode == 70) {
+        field = 0;
+    } else if (keyCode == 80) {
+        field = 1;
+    } else if (keyCode == 67) {
+        field = 2;
+    }
+}
+
+function stochastic_grad_desc(lr) {
     for (let i = 0; i < EPOCHS; i++) {
         let index_arr = [];
         let mini_batch = [];
         let rand_index = 0;
-        let batch_size = Math.floor(random(data.length/4, data.length));
+        let batch_size = Math.floor(random(data.length/8, data.length/4));
 
         costs[i] = net.get_cost(data);
         for (let j = 0; j < batch_size; j++) {
             rand_index = Math.floor(random(0, data.length));
             mini_batch[j] = data[rand_index];
         }
-        net.train(mini_batch, 0.0098);
+        net.train(mini_batch, lr);
+        
+        //console.log("EPOCH:", i, "| BATCHSIZE:", batch_size, "| COST:", net.get_cost(data));
     }
-}
-
-function draw() {
-    //background(0);
-    //circle_set.show();
-    colorMode(HSB, 100, 1, 1);
-    if (seeds.length > 0) {
-        for (let i = 0; i < seeds.length; i++) {
-            fill(i%100, 1, 1)
-            seed = seeds[i];
-            ellipse(seed[0], seed[1], 5);
-            net.feed_forward(seed);
-            seeds[i] = get_dir(net.get_output(), seed);
-        }
-    }
-    //show_costs();
-}
-
-function mouseDragged() {
-    //background(0)
-    if (seeds.length < 1000) {
-        seeds.push([mouseX, mouseY]);
-    } else {
-        seeds.shift();
-    }
+    P = new PredField(COLS, ROWS);
 }
 
 function doubleClicked() {
@@ -74,10 +87,10 @@ function show_costs() {
 
 function get_layers(ins, outs) {
     let vals = [ins];
-    let num_hidden_layers = Math.floor(random(1, 6));
+    let num_hidden_layers = Math.floor(random(2, 20));
 
     for (let i = 1; i < num_hidden_layers+1; i++) {
-        vals[i] = Math.floor(random(2, 2*max([ins, outs])));
+        vals[i] = Math.floor(random(2, 300));
     }
     vals.push(outs);
 
