@@ -39,8 +39,8 @@ class VectorField {
         let mx = map(x, 0, W, -1, 1);
         let my = map(y, 0, H, -1, 1);
 
-        let nx = Math.pow(Math.cos(mx+this.offset_x)/mx, -3);
-        let ny = Math.pow(Math.tan(my+this.offset_y)/my, -1);
+        let nx = Math.pow(Math.cos(mx+y*this.offset_x/W)/mx, -3);
+        let ny = Math.pow(Math.tan(my+x*this.offset_y/H)/my, -1);
 
         let fx = map(nx, -1, 1, 0, W);
         let fy = map(ny, -1, 1, 0, H);

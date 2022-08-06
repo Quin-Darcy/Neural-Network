@@ -5,15 +5,15 @@ let F;
 let P;
 let net;
 let data;
-let field = 1;
+let field = 0;
 let costs = [];
 let ROWS = 40;
 let COLS = 40;
-let PRED_COLS = 20;
-let PRED_ROWS = 20;
+let PRED_COLS = 30;
+let PRED_ROWS = 30;
 let layer_data = []
-let EPOCHS = 5;
-let LEARNING_RATE = 0.02;
+let EPOCHS = 6;
+let LEARNING_RATE = 0.089;
 let NUM_OF_ANGLES = 16;
 
 let seeds = [];
@@ -75,15 +75,20 @@ function mouseDragged() {
 
 function stochastic_grad_desc(learning_rate, epochs) {
     //console.log(net.get_cost(data));
+    let indices = [];
+    for (let i = 0; i < data.length; i++) {
+        indices[i] = i;
+    }
     for (let i = 0; i < epochs; i++) {
         let index_arr = [];
         let mini_batch = [];
         let rand_index = 0;
-        let batch_size = Math.floor(data.length/2, data.length/2);
+        let batch_size = Math.floor(random(indices.length/4, indices.length/2));
 
         for (let j = 0; j < batch_size; j++) {
-            rand_index = Math.floor(random(0, data.length));
-            mini_batch[j] = data[rand_index];
+            rand_index = Math.floor(random(indices.length));
+            mini_batch[j] = data[indices[rand_index]];
+            indices.splice(rand_index, 1);
         }
         net.train(mini_batch, learning_rate);
     }

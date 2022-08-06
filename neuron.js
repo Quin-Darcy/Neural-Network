@@ -42,11 +42,13 @@ class Neuron {
         }
     }
     activation_function(x) {
-        return Math.tanh(x)//1/(1+Math.exp(-x));
+        return 1/(1+Math.exp(-x));
+        //return Math.tanh(x);
     }
     afd() { // Activation function derivative
         let s = this.activation_function(this.z);
-        return 1-s*s//s*(1-s);
+        return s*(1-s);
+        //return 1-s*s;
     }
     show_neuron() {
         console.log("           Z:   ", this.z, "| Activation:", this.activation);
