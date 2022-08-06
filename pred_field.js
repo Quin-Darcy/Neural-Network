@@ -50,33 +50,12 @@ class PredField {
     get_d(arr, p) {
         let index = arr.indexOf(max(arr));
         let new_p = [];
-    
-        switch(index) {
-            case 0:
-                new_p = [p[0]+2, p[1]];
-                break;
-            case 1:
-                new_p = [p[0]+2, p[1]+2];
-                break;
-            case 2:
-                new_p = [p[0], p[1]+2];
-                break;
-            case 3:
-                new_p = [p[0]-2, p[1]+2];
-                break;
-            case 4:
-                new_p = [p[0]-2, p[1]];
-                break;
-            case 5:
-                new_p = [p[0]-2, p[1]-2];
-                break;
-            case 6:
-                new_p = [p[0], p[1]-2];
-                break;
-            case 7:
-                new_p = [p[0]+2, p[1]-2];
-                break;
-        }
+
+        let theta = 2*Math.PI/NUM_OF_ANGLES;
+        let delta_x = this.r*Math.cos(index*theta);
+        let delta_y = this.r*Math.sin(index*theta);
+
+        new_p = [p[0]+delta_x, p[1]+delta_y];
     
         if (new_p[0] <= 0) {
             new_p[0] = 0;

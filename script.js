@@ -7,22 +7,23 @@ let net;
 let data;
 let field = 1;
 let costs = [];
-let ROWS = 30;
-let COLS = 30;
-let PRED_COLS = 30;
-let PRED_ROWS = 30;
+let ROWS = 40;
+let COLS = 40;
+let PRED_COLS = 20;
+let PRED_ROWS = 20;
 let layer_data = []
-let EPOCHS = 10;
-let LEARNING_RATE = 0.01;
+let EPOCHS = 5;
+let LEARNING_RATE = 0.02;
+let NUM_OF_ANGLES = 16;
 
 let seeds = [];
-let MAX_SEEDS = 500;
+let MAX_SEEDS = 1000;
 
 function setup() {
     createCanvas(W, H);
     background(0);
 
-    layer_data = get_layers(2, 8);
+    layer_data = get_layers(2, NUM_OF_ANGLES);
     net = new NeuralNet(layer_data);
     F = new VectorField(COLS, ROWS);
     data = F.data
@@ -34,6 +35,9 @@ function setup() {
 
 function draw() {
     background(0);
+    noStroke()
+    fill(255)
+    text(net.get_cost(data), W/32, H/55);
 
     
     if (field == 0) {
@@ -41,6 +45,7 @@ function draw() {
     } else if (field == 1) {
         P.show();
     }
+
     /*
     if (seeds.length > 0) {
         for (let i = 0; i < seeds.length; i++) {
@@ -74,7 +79,7 @@ function stochastic_grad_desc(learning_rate, epochs) {
         let index_arr = [];
         let mini_batch = [];
         let rand_index = 0;
-        let batch_size = Math.floor(random(min(10, data.length/16), min(20, data.length/4)));
+        let batch_size = Math.floor(data.length/2, data.length/2);
 
         for (let j = 0; j < batch_size; j++) {
             rand_index = Math.floor(random(0, data.length));
@@ -110,33 +115,13 @@ function show_costs() {
 function get_dir(arr, p) {
     let index = arr.indexOf(max(arr));
     let new_p = [];
+    let r = 2;//min([W/COLS, H/ROWS]) / 2;
 
-    switch(index) {
-        case 0:
-            new_p = [p[0]+2, p[1]];
-            break;
-        case 1:
-            new_p = [p[0]+2, p[1]+2];
-            break;
-        case 2:
-            new_p = [p[0], p[1]+2];
-            break;
-        case 3:
-            new_p = [p[0]-2, p[1]+2];
-            break;
-        case 4:
-            new_p = [p[0]-2, p[1]];
-            break;
-        case 5:
-            new_p = [p[0]-2, p[1]-2];
-            break;
-        case 6:
-            new_p = [p[0], p[1]-2];
-            break;
-        case 7:
-            new_p = [p[0]+2, p[1]-2];
-            break;
-    }
+    let theta = 2*Math.PI/NUM_OF_ANGLES;
+    let delta_x = r*Math.cos(index*theta);
+    let delta_y = r*Math.sin(index*theta);
+
+    new_p = [p[0]+delta_x, p[1]+delta_y];
 
     if (new_p[0] <= 0) {
         new_p[0] = 0;
@@ -150,6 +135,7 @@ function get_dir(arr, p) {
     if (H <= new_p[1]) {
         new_p[1] = H;
     }
+
     return new_p;
 }
 

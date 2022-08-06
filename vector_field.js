@@ -39,8 +39,8 @@ class VectorField {
         let mx = map(x, 0, W, -1, 1);
         let my = map(y, 0, H, -1, 1);
 
-        let nx = Math.pow(Math.cos(mx+this.offset_x)/mx, 3);
-        let ny = Math.pow(Math.sin(my+this.offset_y)/my, 3);
+        let nx = Math.pow(Math.cos(mx+this.offset_x)/mx, -3);
+        let ny = Math.pow(Math.tan(my+this.offset_y)/my, -1);
 
         let fx = map(nx, -1, 1, 0, W);
         let fy = map(ny, -1, 1, 0, H);
@@ -53,25 +53,25 @@ class VectorField {
         return [x1, y1, (theta+2*Math.PI)%(2*Math.PI)];
     }
     direction_num(p1, p2) {
-        let d = Math.PI/8;
+        let d = Math.PI/NUM_OF_ANGLES;
         let omega = (2*Math.PI+Math.atan2(p2[1]-p1[1], p2[0]-p1[0]))%(2*Math.PI);
-        
-        if ((2*Math.PI-d <= omega && omega <= 2*Math.PI) || (0 <= omega && omega < d)) {
-            return [1,0,0,0,0,0,0,0];
-        } else if (Math.PI/4-d <= omega && omega < Math.PI/4+d) {
-            return [0,1,0,0,0,0,0,0];
-        } else if (Math.PI/2-d <= omega && omega < Math.PI/2+d) {
-            return [0,0,1,0,0,0,0,0];
-        } else if (3*Math.PI/4-d <= omega && omega < 3*Math.PI/4+d) {
-            return [0,0,0,1,0,0,0,0];
-        } else if (Math.PI-d <= omega && omega < Math.PI+d) {
-            return [0,0,0,0,1,0,0,0];
-        } else if (5*Math.PI/4-d <= omega && omega < 5*Math.PI/4+d) {
-            return [0,0,0,0,0,1,0,0];
-        } else if (3*Math.PI/2-d <= omega && omega < 3*Math.PI/2+d) {
-            return [0,0,0,0,0,0,1,0];
-        } else {
-            return [0,0,0,0,0,0,0,1];
+
+        let theta = 2*Math.PI / NUM_OF_ANGLES;
+        let angle_vec = [];
+
+        for (let i = 0; i < NUM_OF_ANGLES; i++) {
+            angle_vec[i] = 0;
+        }
+
+        for (let i = 0; i < NUM_OF_ANGLES-1; i++) {
+            if (i*theta <= omega && omega < (i+1)*theta) {
+                angle_vec[i] = 1;
+                return angle_vec;
+            }
+        }
+        if ((NUM_OF_ANGLES-1)*theta < omega && omega < 2*Math.PI) {
+            angle_vec[NUM_OF_ANGLES-1] = 1;
+            return angle_vec;
         }
     }
     show() {
