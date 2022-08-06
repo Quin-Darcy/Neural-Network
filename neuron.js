@@ -42,22 +42,11 @@ class Neuron {
         }
     }
     activation_function(x) {
-        x = Math.tanh(x);
-        if (x < 0) {
-            return 0;
-        } else {
-            return x;
-        }
-        //return 1/(1+Math.exp(-x));//Math.tanh(x);
+        return 1/(1+Math.exp(-x));
     }
     afd() { // Activation function derivative
         let s = this.activation_function(this.z);
-        if (s < 0) {
-            return 0;
-        } else {
-            return 1;
-        }
-        //return s*(1-s);//1-Math.pow(s, 2);
+        return s*(1-s);
     }
     show_neuron() {
         console.log("           Z:   ", this.z, "| Activation:", this.activation);
