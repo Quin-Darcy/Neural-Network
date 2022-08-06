@@ -5,12 +5,12 @@ let F;
 let P;
 let net;
 let data;
-let field = 0;
+let field = 1;
 let costs = [];
 let ROWS = 40;
 let COLS = 40;
-let PRED_COLS = 30;
-let PRED_ROWS = 30;
+let PRED_COLS = 24;
+let PRED_ROWS = 24;
 let layer_data = []
 let EPOCHS = 6;
 let LEARNING_RATE = 0.089;
@@ -30,22 +30,23 @@ function setup() {
 
     P = new PredField(COLS, ROWS);
 
+    // Uncomment this to draw paths in the predicated vector field!
     //colorMode(HSB, 2*Math.PI, 1, 1);
 }
 
 function draw() {
+    // Uncomment this block to watch the NN train!
     background(0);
     noStroke()
     fill(255)
     text(net.get_cost(data), W/32, H/55);
-
-    
     if (field == 0) {
         F.show();
     } else if (field == 1) {
         P.show();
     }
 
+    //Uncomment to draw paths in the predicated vector field!
     /*
     if (seeds.length > 0) {
         for (let i = 0; i < seeds.length; i++) {
@@ -67,14 +68,13 @@ function get_theta(v, w) {
 }
 
 function mouseDragged() {
-    if (seeds.length >= 40) {
+    if (seeds.length >= MAX_SEEDS) {
         seeds.shift();
     }
     seeds.push([mouseX, mouseY]);
 }
 
 function stochastic_grad_desc(learning_rate, epochs) {
-    //console.log(net.get_cost(data));
     let indices = [];
     for (let i = 0; i < data.length; i++) {
         indices[i] = i;
@@ -92,6 +92,7 @@ function stochastic_grad_desc(learning_rate, epochs) {
         }
         net.train(mini_batch, learning_rate);
     }
+    // Uncomment this to watch the NN train!
     P = new PredField(PRED_COLS, PRED_ROWS);
 }
 
